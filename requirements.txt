@@ -1,6 +1,8 @@
 jupyter
+Pillow
 matplotlib
 numpy
 scipy
+seaborn
 tqdm
 xmltodict
