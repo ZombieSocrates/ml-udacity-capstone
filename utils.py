@@ -1,5 +1,6 @@
 import numpy as np 
 import pathlib
+import xmltodict
 
 
 def get_breed_name(nested_file_arr):
@@ -45,13 +46,15 @@ def get_image_path(file_name_arr, root_dir):
         file_name_arr: numpy array that contains a single image path.
 
         root_dir: the name of the directory where you downloaded and extracted 
-        the data set. 
+        the data set. Can be either a string or a pathlib PosixPath. 
 
     Output:
         A Pathlib path that points to the unprocessed image
     '''
+    if not isinstance(root_dir, pathlib.PosixPath):
+        root_dir = pathlib.Path(root_dir)
     file_path = file_name_arr.item()
-    return pathlib.Path(root_dir) / "Images" / file_path
+    return root_dir / "Images" / file_path
 
 
 def get_annotation_path(file_name_arr, root_dir = data_dir):
@@ -63,12 +66,36 @@ def get_annotation_path(file_name_arr, root_dir = data_dir):
         file_name_arr: numpy array that contains a single image path.
 
         root_dir: the name of the directory where you downloaded and extracted 
-        the data set. 
+        the data set. Can be either a string or a pathlib PosixPath. 
 
     Output:
         A Pathlib path that points to the annotation file
     '''
+    if not isinstance(root_dir, pathlib.PosixPath):
+        root_dir = pathlib.Path(root_dir)
     file_path = pathlib.Path(file_name_arr.item())
     annot_file_name = file_path.stem
     breed_dir = file_path.parent.stem
     return root_dir / "Annotation" / breed_dir / annot_file_name
+
+
+def extract_bbox_coords(annot_path):
+    '''Given the path to the annotation xml files, return the coordinates 
+    needed to crop out the non-dog parts of the image.
+
+    Input:
+        annot_path: a PosixPath returned by get_annotation_path() above
+
+    Output:
+        A four-tuple that specifies the upper-left and bottom right corners 
+        of the bounding box that surrounds the dog in each image. This can be
+        passed directly to the crop utility in Pillow
+    '''
+    with open(annot_path, "r") as fd:
+        raw_xml = xmltodict.parse(fd.read())
+    box = raw_xml["annotation"]["object"]["bndbox"]
+    left = int(box["xmin"])
+    upper = int(box["ymin"])
+    right = int(box["xmax"])
+    lower = int(box["ymax"])
+    return (left, upper, right, lower)
