@@ -1,10 +1,12 @@
 import numpy as np 
 import pathlib
+import scipy.io as sio
+import shutil
 import xmltodict
 
 from PIL import Image
 from tqdm import tqdm
-
+from pprint import pprint
 
 def get_breed_name(file_list_arr):
     '''Extracts the breed name associated with a particular image from the 
@@ -44,7 +46,7 @@ def map_breed_labels_to_names(file_list_arr):
 
 
 def get_image_path(file_name_arr, root_dir):
-        '''Given one of the numpy arrays within the 'file_list' object of 
+    '''Given one of the numpy arrays within the 'file_list' object of 
     test_list.mat or train_list.mat, extracts the matching annotation from 
     `annotation_list'
 
@@ -194,14 +196,10 @@ def prepare_image_folder(file_list_arr, root_dir,
         follows, using cropped images instead of entire ones.
 
         data/
-            train/
+            dataset_type/
                  breed-01/
                      file.jpg
                      file.jpg
-                 breed-02
-
-            test/
-                 breed-01
                  breed-02
     '''
     mult_count = 0
@@ -231,3 +229,55 @@ def prepare_image_folder(file_list_arr, root_dir,
     if log_multiples:
         print(f"\tTotal of {mult_count} multiples found in {mult_img} images")
     print(f"Finished preparing {dataset_type} data!!")
+
+
+def run_pipeline(root_dir):
+    '''Assuming that you have already used wget functionality to download the 
+    raw dataset folders and files to a given directory, this method will 
+    reconfigure the folders in the appropriate manner, and then delete the
+    raw versions to save memory. It's basically just a wrapper around the
+    functio above so that we only need to import one function from this module.
+
+    Input:
+        root_dir: the name of the directory where you downloaded and extracted 
+        the data set. Can be either a string or a pathlib PosixPath.
+
+    Output:
+        Doesn't return anything, just organizes your root_dir as 
+        follows, using cropped images instead of entire ones.
+
+        data/
+            train/
+                 breed-01/
+                     file.jpg
+                     file.jpg
+                 breed-02
+
+            test/
+                 breed-01
+                 breed-02
+
+    '''
+    if not isinstance(root_dir, pathlib.PosixPath):
+        root_dir = pathlib.Path(root_dir)
+    pipeline_opts = {
+        "train": root_dir / "train_list.mat",
+        "test": root_dir / "test_list.mat" 
+    }
+    for data_type, list_path in pipeline_opts.items():
+        image_info = sio.loadmat(list_path)
+        image_list = image_info["file_list"]
+        prepare_image_folder(file_list_arr = image_info["file_list"], 
+            root_dir = root_dir, dataset_type = data_type, 
+            log_multiples = True)
+    print("Cleaning up unprocessed files")
+    for raw_dir in ["Annotation", "Images"]:
+        print(f"\tRemoving {root_dir / raw_dir} ...")
+        shutil.rmtree(str(root_dir / raw_dir))
+    for mat_type in ["file", "test", "train"]:
+        mat_path = root_dir / f"{mat_type}_list.mat"
+        print(f"\tDeleting {mat_path}")
+        mat_path.unlink(root_dir / mat_fl)
+    print("Pipeline Finished")
+
+

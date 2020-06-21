@@ -2,7 +2,10 @@ jupyter
 Pillow
 matplotlib
 numpy
+sagemaker
 scipy
 seaborn
+torch
+torchvision
 tqdm
 xmltodict
