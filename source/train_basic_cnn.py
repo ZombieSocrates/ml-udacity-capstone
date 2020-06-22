@@ -9,7 +9,7 @@ from torchvision import transforms, datasets
 from torch.utils.data import DataLoader
 
 # local import to get our model class. CHANGE .models
-from models import BasicConvNet
+from .models import BasicConvNet
 
 
 def model_fn(model_dir):
@@ -87,7 +87,13 @@ def train(model, train_loader, epochs, criterion, optimizer, device):
     device       - Where the model and data should be loaded (gpu or cpu).
     '''
     
-    # training loop is provided
+    # Create a piece of the model that translates from labels to names
+    model.class_to_idx = train_loader.dataset.class_to_idx
+    model.idx_to_class = {
+        idx: class_ for class_, idx in model.class_to_idx.items()
+    }
+
+    # training loop
     for epoch in range(1, epochs + 1):
         
         train_loss = 0.0
@@ -121,8 +127,11 @@ def train(model, train_loader, epochs, criterion, optimizer, device):
             accuracy = torch.mean(correct_tensor.type(torch.FloatTensor))
             # Multiply average accuracy times the number of examples in batch
             train_acc += accuracy.item() * data.size(0)
-
-        print(f"Epoch: {epoch}, Loss: {train_loss / len(train_loader):.4f}, Accuracy: {train_acc / len(train_loader):.2%}")
+        
+        epoch_str = "Epoch {}".format(epoch)
+        loss_str = "Loss {:.4f}".format(train_loss / len(train_loader.dataset))
+        acc_str = "Accuracy: {:.2%}".format(train_acc / len(train_loader.dataset)
+        print(", ".join([epoch_str, loss_str, acc_str]))
 
 
 if __name__ == '__main__':

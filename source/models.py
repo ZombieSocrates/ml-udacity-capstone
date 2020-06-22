@@ -20,6 +20,10 @@ class BasicConvNet(nn.Module):
         '''Not including many tunable parameters in this class because I 
         want to be sure the architecture works. 
 
+        The main thing I needed to make sure of here: since we're using
+        Negative Log Likelihood as our loss function, we need to apply
+        a LogSoftmax
+
         '''
         super(BasicConvNet, self).__init__()
 
@@ -39,7 +43,7 @@ class BasicConvNet(nn.Module):
              out_features = 56 *56)
         self.fc2 = nn.Linear(in_features = 56 * 56, 
              out_features = 120)
-
+        self.logsoft = nn.LogSoftmax(dim = 1)
 
     def forward(self, x):
         '''Relatively quick sizing overview
@@ -73,4 +77,4 @@ class BasicConvNet(nn.Module):
         x = F.relu(x)
 
         x = self.fc2(x)
-        return x
+        return self.logsoft(x)
