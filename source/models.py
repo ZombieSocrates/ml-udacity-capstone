@@ -23,16 +23,16 @@ class BasicConvNet(nn.Module):
         '''
         super(BasicConvNet, self).__init__()
 
-        self.conv1 = nn.Conv2D(in_channels = 3, out_channels = 16,
+        self.conv1 = nn.Conv2d(in_channels = 3, out_channels = 16,
              kernel_size = 3, stride = 1,  padding = 1, 
              padding_mode = "zeros")
-        self.pool1 = nn.MaxPool2D(kernel_size = 2, stride = 2,
+        self.pool1 = nn.MaxPool2d(kernel_size = 2, stride = 2,
              padding = 0)
 
-        self.conv2 = nn.Conv2D(in_channels = 16, out_channels = 16,
+        self.conv2 = nn.Conv2d(in_channels = 16, out_channels = 16,
              kernel_size = 3, stride = 1,  padding = 1,
              padding_mode = "zeros")
-        self.pool2 = nn.MaxPool2D(kernel_size = 2, stride = 2,
+        self.pool2 = nn.MaxPool2d(kernel_size = 2, stride = 2,
              padding = 0)
 
         self.fc1 = nn.Linear(in_features = 56 * 56 * 16, 
