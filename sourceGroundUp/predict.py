@@ -5,7 +5,7 @@ import torch
 from six import BytesIO
 
 # import model from models.py, by name
-from .models import BasicConvNet
+from model import BasicConvNet
 
 # default content type is numpy array
 NP_CONTENT_TYPE = 'application/x-npy'

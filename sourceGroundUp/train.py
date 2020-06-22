@@ -8,8 +8,8 @@ import torch.optim as optim
 from torchvision import transforms, datasets
 from torch.utils.data import DataLoader
 
-# local import to get our model class. CHANGE .models
-from .models import BasicConvNet
+# local import to get our model class.
+from model import BasicConvNet
 
 
 def model_fn(model_dir):
@@ -130,7 +130,7 @@ def train(model, train_loader, epochs, criterion, optimizer, device):
         
         epoch_str = "Epoch {}".format(epoch)
         loss_str = "Loss {:.4f}".format(train_loss / len(train_loader.dataset))
-        acc_str = "Accuracy: {:.2%}".format(train_acc / len(train_loader.dataset)
+        acc_str = "Accuracy: {:.2%}".format(train_acc / len(train_loader.dataset))
         print(", ".join([epoch_str, loss_str, acc_str]))
 
 
