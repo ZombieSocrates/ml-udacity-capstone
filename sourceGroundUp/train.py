@@ -178,10 +178,16 @@ if __name__ == '__main__':
     # Trains the model (given line of code, which calls the above training function)
     train(model, train_loader, args.epochs, criterion, optimizer, device)
 
-    ## TODO: complete in the model_info by adding three argument names, the first is given
-    # Keep the keys of this dictionary as they are 
+    
+    # Uncertain if we actually need to save the class_to_idx mappings, but :shrug:
     model_info_path = os.path.join(args.model_dir, 'model_info.pth')
     with open(model_info_path, 'wb') as f:
+        model_info = {
+            "epochs": args.epochs,
+            "batch_size": args.batch_size,
+            "class_to_idx": model.class_to_idx,
+            "idx_to_class": model.idx_to_class
+        }
         torch.save(model_info, f)
     
 	# Save the model parameters
