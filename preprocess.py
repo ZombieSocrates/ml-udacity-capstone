@@ -277,7 +277,7 @@ def run_pipeline(root_dir):
     for mat_type in ["file", "test", "train"]:
         mat_path = root_dir / f"{mat_type}_list.mat"
         print(f"\tDeleting {mat_path}")
-        mat_path.unlink(root_dir / mat_fl)
+        mat_path.unlink()
     print("Pipeline Finished")
 
 
