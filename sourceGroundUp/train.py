@@ -45,9 +45,7 @@ def _get_train_data_loader(batch_size, training_dir):
     transformations that will happen 
     '''
     print("Getting train data loader.")
-    image_transforms = {
-        "train":
-        transforms.Compose([
+    train_transform = transforms.Compose([
             transforms.RandomResizedCrop(size = 256, scale = (0.85, 1.0)),
             transforms.RandomRotation(degrees = 20),
             transforms.ColorJitter(),
@@ -55,23 +53,10 @@ def _get_train_data_loader(batch_size, training_dir):
             transforms.CenterCrop(size = 224),
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ]),
-        "test":
-        transforms.Compose([
-            transforms.Resize(size = 256),
-            transforms.CenterCrop(size = 224),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
-    }
-    testing_dir = str(training_dir).replace("train","test")
-    data = {
-        "train": datasets.ImageFolder(root = training_dir,
-            transform = image_transforms["train"]),
-        "test": datasets.ImageFolder(root = testing_dir, 
-            transform = image_transforms["test"])
-    }
-    return DataLoader(dataset = data["train"], batch_size=batch_size,
+    train_images = datasets.ImageFolder(root = training_dir,
+            transform = train_transform)
+    return DataLoader(dataset = train_images, batch_size=batch_size,
          shuffle = True)
 
 
