@@ -60,21 +60,32 @@ def output_fn(prediction_output, accept):
 
 # Modified predict function
 def predict_fn(input_data, model, topk = 5):
-    print('Predicting top {} class labels for the input data...'.format(topk))
+    '''Moves serialized numpy input to available GPU, converts it back to a
+    Torch tensor, applies our model to the data, and gets back class labels
+    and associated probabilities for that input. Will return the N most likely 
+    classes.
 
+    Inputs:
+
+        input_data: a numpy array that has already had ImageFolder transforms
+        applied to it (AKA, passed in from a DataLoader)
+
+        model: the PyTorch model from model_fn
+
+        topk: controls how many of the most likely classes will be returned by
+        the model
+
+    Output:
+        a numpy array with two sub arrays, the first being the class labels 
+        and the second being the associated probabilities
+    '''
+    print('Predicting top {} class labels for the input data...'.format(topk))
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
-    # Process input_data so that it is ready to be sent to our model.
     data = torch.from_numpy(input_data.astype('float32'))
     data = data.to(device)
-
-    # Put the model into evaluation mode
     model.eval()
-
-    # Compute the result of applying the model to the input data
-    # The variable `out_label` should be a rounded value, either 1 or 0
     out = model(data)
-    ps = torch.exp.out()
+    ps = torch.exp(out)
     top_ps, top_class = ps.topk(topk, dim = 1)
     classes_np = top_class.cpu().detach().numpy()
     probs_np = top_ps.cpu().detach().numpy()
