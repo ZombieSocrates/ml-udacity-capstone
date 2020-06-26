@@ -236,7 +236,7 @@ def run_pipeline(root_dir):
     raw dataset folders and files to a given directory, this method will 
     reconfigure the folders in the appropriate manner, and then delete the
     raw versions to save memory. It's basically just a wrapper around the
-    functio above so that we only need to import one function from this module.
+    function above so that we only need to import one function from this module.
 
     Input:
         root_dir: the name of the directory where you downloaded and extracted 
